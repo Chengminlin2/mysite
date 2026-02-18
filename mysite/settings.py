@@ -26,7 +26,12 @@ SECRET_KEY = 'django-insecure-!mi(werx6fq32e)h4we%q(d5k=(=coxpx^ux9z!#pqv=*-il13
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'RENDER' not in os.environ
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'mysite-1-p20l.onrender.com',   # 你的實際 Render URL（從 log 抄）
+    '.onrender.com',                 # 萬用（wildcard），涵蓋所有子域名，測試超方便
+    'localhost',                     # 本地開發用，可選
+    '127.0.0.1',
+]
 
 
 # Application definition
@@ -49,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+	'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -80,7 +86,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
+DATABASES['default'] = dj_database_url.config(conn_max_age=600)
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
