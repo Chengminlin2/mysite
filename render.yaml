@@ -1,0 +1,29 @@
+databases:
+  - name: mysitedb          # 資料庫服務名稱（可自訂）
+    plan: free              # free / starter 等，免費版夠用
+    databaseName: mysite    # 資料庫名稱
+    user: mysite            # 使用者名稱（Render 會自動產生密碼）
+
+services:
+  - type: web
+    name: mysite            # Web Service 名稱
+    env: python             # Python 環境
+    plan: free              # 免費方案
+    region: singapore       # 建議選離台灣近的（如 singapore 或 oregon），跟資料庫同區域避免延遲
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: gunicorn mysite.wsgi:application --bind 0.0.0.0:$PORT
+    # 如果你的專案資料夾是 mysite/mysite（內層），startCommand 改成：gunicorn mysite.wsgi:application ...
+
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.14.1           # 或你的 Python 版本
+      - key: SECRET_KEY
+        generateValue: true   # Render 自動產生安全的 SECRET_KEY
+      - key: DEBUG
+        value: "False"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mysitedb      # 對應上面的資料庫 name
+          property: connectionString  # 自動注入 postgresql://... 格式
+      - key: ALLOWED_HOSTS
+        value: "*"            # 測試用，之後改成你的域名
